@@ -31,6 +31,11 @@ public class GameCardService
         return new[] {workingArray[0], workingArray[1]};
     }
 
+    public GameCard? Get(Guid id)
+    {
+        return db.Games.Find(id);
+    }
+
     public void OnlyDrew(Guid gamecardId)
     {
         var game = db.Games.Find(gamecardId);

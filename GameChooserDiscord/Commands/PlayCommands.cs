@@ -20,7 +20,7 @@ public class PlayCommands : ApplicationCommandModule
     {
         var pair = games.GetRandomPair();
         var response = new DiscordInteractionResponseBuilder()
-            .WithContent($"<{pair[0].WikipediaUrl}>\n<{pair[1].WikipediaUrl}>\nVoted on by:")
+            .WithContent($"<{pair[0].WikipediaUrl}>\n{pair[0].Id}<{pair[1].WikipediaUrl}>\n{pair[1].Id}")
             .AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Success, "heardof0", "I have heard of only game 1"),
@@ -31,37 +31,7 @@ public class PlayCommands : ApplicationCommandModule
                 new DiscordButtonComponent(ButtonStyle.Secondary, "heardofboth", "I have heard of both"),
                 new DiscordButtonComponent(ButtonStyle.Secondary, "heardofnone", "I have heard of neither")
             });
-
-        ctx.Client.ComponentInteractionCreated += async (s, e) =>
-        {
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
-            switch (e.Id)
-            {
-                case "heardof0":
-                    games.OnlyDrew(pair[0].Id);
-                    games.DidNotHearOf(pair[1].Id);
-                    break;
-                case "heardof1":
-                    games.OnlyDrew(pair[1].Id);
-                    games.DidNotHearOf(pair[0].Id);
-                    break;
-                case "heardofboth":
-                    games.OnlyDrew(pair[0].Id);
-                    games.OnlyDrew(pair[1].Id);
-                    break;
-                case "heardofnone":
-                    games.DidNotHearOf(pair[0].Id);
-                    games.DidNotHearOf(pair[1].Id);
-                    break;
-            }
-
-            var followup = new DiscordFollowupMessageBuilder()
-                .WithContent($"Vote from {e.User.Username} recorded :)");
-            followup.IsEphemeral = true;
-            await e.Interaction.CreateFollowupMessageAsync(followup);
-        };
-
-
         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, response);
     }
+    
 }
