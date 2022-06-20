@@ -61,6 +61,8 @@ internal class Program
     {
         await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
         var eb = e.Message.Content.Split("\n");
+        Console.WriteLine(eb[1]);
+        Console.WriteLine(eb[2]);
         var pair = new GameCard[]
         {
             games.Get(new Guid(eb[1])),
