@@ -20,7 +20,7 @@ public class PlayCommands : ApplicationCommandModule
     {
         var pair = games.GetRandomPair();
         var response = new DiscordInteractionResponseBuilder()
-            .WithContent($"<{pair[0].WikipediaUrl}>\n<{pair[1].WikipediaUrl}\nVoted on by:>")
+            .WithContent($"<{pair[0].WikipediaUrl}>\n<{pair[1].WikipediaUrl}>\nVoted on by:")
             .AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Success, "heardof0", "I have heard of only game 1"),
