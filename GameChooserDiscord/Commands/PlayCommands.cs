@@ -34,6 +34,7 @@ public class PlayCommands : ApplicationCommandModule
 
         ctx.Client.ComponentInteractionCreated += async (s, e) =>
         {
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             switch (e.Id)
             {
                 case "heardof0":
@@ -54,9 +55,10 @@ public class PlayCommands : ApplicationCommandModule
                     break;
             }
 
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder()
-                    .WithContent($"{e.User.Username} voted"));
+            var followup = new DiscordFollowupMessageBuilder()
+                .WithContent($"Vote from {e.User.Username} recorded :)");
+            followup.IsEphemeral = true;
+            await e.Interaction.CreateFollowupMessageAsync(followup);
         };
 
 
