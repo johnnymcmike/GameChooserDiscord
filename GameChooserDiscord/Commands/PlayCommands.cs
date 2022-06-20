@@ -20,7 +20,7 @@ public class PlayCommands : ApplicationCommandModule
     {
         var pair = games.GetRandomPair();
         var response = new DiscordInteractionResponseBuilder()
-            .WithContent($"<{pair[0].WikipediaUrl}>\n<{pair[1].WikipediaUrl}>")
+            .WithContent($"<{pair[0].WikipediaUrl}>\n<{pair[1].WikipediaUrl}\nVoted on by:>")
             .AddComponents(new DiscordComponent[]
             {
                 new DiscordButtonComponent(ButtonStyle.Success, "heardof0", "I have heard of only game 1"),
@@ -55,7 +55,18 @@ public class PlayCommands : ApplicationCommandModule
             }
 
             await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-                new DiscordInteractionResponseBuilder().WithContent($"{e.Message.Content}\nRegistered."));
+                new DiscordInteractionResponseBuilder()
+                    .WithContent($"{e.Message.Content}\n{e.User.Username}")
+                    .AddComponents(new DiscordComponent[]
+                    {
+                        new DiscordButtonComponent(ButtonStyle.Success, "heardof0", "I have heard of only game 1"),
+                        new DiscordButtonComponent(ButtonStyle.Success, "heardof1", "I have heard of only game 2")
+                    })
+                    .AddComponents(new DiscordComponent[]
+                    {
+                        new DiscordButtonComponent(ButtonStyle.Secondary, "heardofboth", "I have heard of both"),
+                        new DiscordButtonComponent(ButtonStyle.Secondary, "heardofnone", "I have heard of neither")
+                    }));
         };
 
 
