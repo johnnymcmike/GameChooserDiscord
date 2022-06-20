@@ -54,19 +54,9 @@ public class PlayCommands : ApplicationCommandModule
                     break;
             }
 
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder()
-                    .WithContent($"{e.Message.Content}\n{e.User.Username}")
-                    .AddComponents(new DiscordComponent[]
-                    {
-                        new DiscordButtonComponent(ButtonStyle.Success, "heardof0", "I have heard of only game 1"),
-                        new DiscordButtonComponent(ButtonStyle.Success, "heardof1", "I have heard of only game 2")
-                    })
-                    .AddComponents(new DiscordComponent[]
-                    {
-                        new DiscordButtonComponent(ButtonStyle.Secondary, "heardofboth", "I have heard of both"),
-                        new DiscordButtonComponent(ButtonStyle.Secondary, "heardofnone", "I have heard of neither")
-                    }));
+                    .WithContent($"{e.User.Username} voted"));
         };
 
 
