@@ -8,6 +8,7 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using GameChooserDiscord.Commands;
+using GameChooserDiscord.Database;
 using GameChooserDiscord.Models;
 using GameChooserDiscord.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,11 +41,12 @@ internal class Program
         });
         var rng = new Random();
         var http = new HttpClient();
+        GameChoiceContext rawdb = new GameChoiceContext("Data Source=Games.db");
         http.DefaultRequestHeaders.Add("User-Agent", "Epic C# Discord Bot (mbjmcm@gmail.com)");
         var services = new ServiceCollection()
             .AddSingleton(rng)
             .AddSingleton(http)
-            .AddSingleton<GameCardService>()
+            .AddSingleton(rawdb)
             .AddSingleton<FruitService>()
             .BuildServiceProvider();
 
