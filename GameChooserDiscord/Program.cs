@@ -40,13 +40,10 @@ internal class Program
             Timeout = TimeSpan.FromSeconds(30)
         });
         var rng = new Random();
-        var http = new HttpClient();
-        GameChoiceContext rawdb = new GameChoiceContext("Data Source=Games.db");
-        http.DefaultRequestHeaders.Add("User-Agent", "Epic C# Discord Bot (mbjmcm@gmail.com)");
+        // http.DefaultRequestHeaders.Add("User-Agent", "Epic C# Discord Bot (mbjmcm@gmail.com)");
         var services = new ServiceCollection()
             .AddSingleton(rng)
-            .AddSingleton(http)
-            .AddSingleton(rawdb)
+            .AddSingleton<GameCardService>()
             .AddSingleton<FruitService>()
             .BuildServiceProvider();
 
@@ -54,9 +51,13 @@ internal class Program
         {
             Services = services
         });
-        slash.RegisterCommands<PlayCommands>();
-        slash.RegisterCommands<FruitCommands>();
+        slash.SlashCommandErrored += async (s, e) =>
+        {
+            Console.WriteLine("Command errored:");
+            Console.WriteLine(e.Exception);
+        };
 
+        slash.RegisterCommands<PlayCommands>();
         discord.ComponentInteractionCreated += OnDiscordOnComponentInteractionCreated;
         await discord.ConnectAsync();
         await Task.Delay(-1);
@@ -68,8 +69,8 @@ internal class Program
         {
             await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             var contentSplit = e.Message.Content.Split("#");
-            var id1 = int.Parse(contentSplit[0].TakeWhile(Char.IsDigit).ToString());
-            var id2 = int.Parse(contentSplit[1].TakeWhile(Char.IsDigit).ToString());
+            var id1 = int.Parse(contentSplit[1].TakeWhile(Char.IsDigit).ToArray());
+            var id2 = int.Parse(contentSplit[2].TakeWhile(Char.IsDigit).ToArray());
             var fruitpair = new Fruit[]
             {
                 fruits.Get(id1),
