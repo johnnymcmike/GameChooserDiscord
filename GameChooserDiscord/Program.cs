@@ -55,6 +55,7 @@ internal class Program
             Services = services
         });
         slash.RegisterCommands<PlayCommands>();
+        slash.RegisterCommands<FruitCommands>();
 
         discord.ComponentInteractionCreated += OnDiscordOnComponentInteractionCreated;
         await discord.ConnectAsync();
