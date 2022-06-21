@@ -15,4 +15,5 @@ public class GameChoiceContext : DbContext
     }
 
     public DbSet<GameCard> Games { get; set; }
+    public DbSet<Fruit> Fruits { get; set; }
 }

@@ -22,6 +22,7 @@ internal class Program
     }
 
     private static GameCardService games = new GameCardService();
+    private static FruitService fruits = new FruitService();
 
     private static async Task MainAsync()
     {
@@ -44,6 +45,7 @@ internal class Program
             .AddSingleton(rng)
             .AddSingleton(http)
             .AddSingleton<GameCardService>()
+            .AddSingleton<FruitService>()
             .BuildServiceProvider();
 
         var slash = discord.UseSlashCommands(new SlashCommandsConfiguration
@@ -59,31 +61,62 @@ internal class Program
 
     private static async Task OnDiscordOnComponentInteractionCreated(DiscordClient s, ComponentInteractionCreateEventArgs e)
     {
-        await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
-        var eb = e.Message.Content.Split("\n");
-        var pair = new GameCard[]
+        if (e.Id.StartsWith("choseFruit"))
         {
-            games.Get(new Guid(eb[1])),
-            games.Get(new Guid(eb[3]))
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            var contentSplit = e.Message.Content.Split("#");
+            var id1 = int.Parse(contentSplit[0].TakeWhile(Char.IsDigit).ToString());
+            var id2 = int.Parse(contentSplit[1].TakeWhile(Char.IsDigit).ToString());
+            var fruitpair = new Fruit[]
+            {
+                fruits.Get(id1),
+                fruits.Get(id2)
+            };
+
+            switch (e.Id)
+            {
+                case "choseFruit0":
+                    fruits.Chose(id1);
+                    fruits.Rejected(id2);
+                    await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder()
+                        .WithContent(
+                            $"{e.User.Username} likes **{fruitpair[0].Name}** more than **{fruitpair[1].Name}**!"));
+                    break;
+                case "choseFruit1":
+                    fruits.Chose(id1);
+                    fruits.Rejected(id2);
+                    await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder()
+                        .WithContent(
+                            $"{e.User.Username} likes **{fruitpair[1].Name}** more than **{fruitpair[0].Name}**!"));
+                    break;
+            }
+            return;
+        }
+        await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+        var messagelines = e.Message.Content.Split("\n");
+        var gamepair = new GameCard[]
+        {
+            games.Get(new Guid(messagelines[1])),
+            games.Get(new Guid(messagelines[3]))
         };
 
         switch (e.Id)
         {
             case "heardof0":
-                games.OnlyDrew(pair[0].Id);
-                games.DidNotHearOf(pair[1].Id);
+                games.OnlyDrew(gamepair[0].Id);
+                games.DidNotHearOf(gamepair[1].Id);
                 break;
             case "heardof1":
-                games.OnlyDrew(pair[1].Id);
-                games.DidNotHearOf(pair[0].Id);
+                games.OnlyDrew(gamepair[1].Id);
+                games.DidNotHearOf(gamepair[0].Id);
                 break;
             case "heardofboth":
-                games.OnlyDrew(pair[0].Id);
-                games.OnlyDrew(pair[1].Id);
+                games.OnlyDrew(gamepair[0].Id);
+                games.OnlyDrew(gamepair[1].Id);
                 break;
             case "heardofnone":
-                games.DidNotHearOf(pair[0].Id);
-                games.DidNotHearOf(pair[1].Id);
+                games.DidNotHearOf(gamepair[0].Id);
+                games.DidNotHearOf(gamepair[1].Id);
                 break;
         }
 
